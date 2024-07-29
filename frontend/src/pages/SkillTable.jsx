@@ -12,7 +12,7 @@ const SkillTableComponent = () => {
     const fetchSkillsData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/job-skills"
+          "https://job-tracker-zeta.vercel.app/api/job-skills"
         );
         setSkillsData(response.data);
       } catch (error) {

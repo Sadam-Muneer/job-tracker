@@ -20,9 +20,12 @@ const Joblistings = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get("http://localhost:5000/api/jobs", {
-        params: { filter },
-      });
+      const response = await axios.get(
+        "https://job-tracker-zeta.vercel.app/api/jobs",
+        {
+          params: { filter },
+        }
+      );
       const sortedJobs = (response.data.jobs || []).sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
