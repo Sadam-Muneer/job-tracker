@@ -124,52 +124,60 @@ const Joblistings = () => {
       ) : (
         <>
           <h5>Search:</h5>
-          <div className="d-flex flex-between mb-5">
-            <div className="w-50">
-              <div className="mb-2">
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                  className="form-control"
-                  placeholder="Search by skills or category"
-                />
-              </div>
+          <div className="row mb-5">
+            <div className="col-12 col-md-6 mb-3 mb-md-0">
+              <input
+                type="text"
+                value={searchInput}
+                onChange={handleSearchInputChange}
+                className="form-control"
+                placeholder="Search by skills or category"
+              />
             </div>
 
-            <div className="px-5">
-              <button
-                onClick={() => handleFilterChange("today")}
-                className={`btn btn-secondary mx-1 ${
-                  filter === "today" ? "active" : ""
-                }`}
-              >
-                Today
-              </button>
-              <button
-                onClick={() => handleFilterChange("lastWeek")}
-                className={`btn btn-secondary mx-1 ${
-                  filter === "lastWeek" ? "active" : ""
-                }`}
-              >
-                Last Week
-              </button>
-              <button
-                onClick={() => handleFilterChange("lastMonth")}
-                className={`btn btn-secondary mx-1 ${
-                  filter === "lastMonth" ? "active" : ""
-                }`}
-              >
-                Last Month
-              </button>
-              <button
-                onClick={() => handleFilterChange("")}
-                className={`btn btn-secondary mx-1 ${
-                  filter === "" ? "active" : ""
-                }`}
-              >
-                All Jobs
-              </button>
+            <div className="col-12 col-md-6">
+              <div className="row g-2">
+                <div className="col-6 col-md-6">
+                  <button
+                    onClick={() => handleFilterChange("today")}
+                    className={`btn btn-secondary w-100 h-100 ${
+                      filter === "today" ? "active" : ""
+                    }`}
+                  >
+                    Today
+                  </button>
+                </div>
+                <div className="col-6 col-md-6">
+                  <button
+                    onClick={() => handleFilterChange("lastWeek")}
+                    className={`btn btn-secondary w-100 h-100 ${
+                      filter === "lastWeek" ? "active" : ""
+                    }`}
+                  >
+                    Last Week
+                  </button>
+                </div>
+                <div className="col-6 col-md-6">
+                  <button
+                    onClick={() => handleFilterChange("lastMonth")}
+                    className={`btn btn-secondary w-100 h-100 ${
+                      filter === "lastMonth" ? "active" : ""
+                    }`}
+                  >
+                    Last Month
+                  </button>
+                </div>
+                <div className="col-6 col-md-6">
+                  <button
+                    onClick={() => handleFilterChange("")}
+                    className={`btn btn-secondary w-100 h-100 ${
+                      filter === "" ? "active" : ""
+                    }`}
+                  >
+                    All Jobs
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -180,7 +188,7 @@ const Joblistings = () => {
           <div className="row">
             {filteredJobs.length > 0
               ? filteredJobs.map((job, index) => (
-                  <div key={index} className="col-md-4 mb-4">
+                  <div key={index} className="col-lg-4 col-md-6 mb-4">
                     <div className="card">
                       <div className="card-body">
                         <h5 className="card-title">{job.title}</h5>

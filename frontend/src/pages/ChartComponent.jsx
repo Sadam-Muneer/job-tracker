@@ -41,7 +41,7 @@ const ChartComponent = () => {
   }, []);
 
   return (
-    <div className="container mt-4 py-5">
+    <div className=" mt-4 py-5">
       <h2 className="pt-5">Skill-Based Job Data</h2>
       <Bar data={chartData} />
     </div>
