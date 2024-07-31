@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import io from "socket.io-client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Joblistings.css";
+
+const socket = io("http://localhost:5000"); // Adjust the URL if necessary
 
 const Joblistings = () => {
   const [jobs, setJobs] = useState([]);
@@ -16,7 +19,7 @@ const Joblistings = () => {
   const queryParams = new URLSearchParams(location.search);
   const skillFilter = queryParams.get("skill");
 
-  const fetchJobs = useCallback(async () => {
+  const fetchJobs = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -44,11 +47,20 @@ const Joblistings = () => {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  };
 
   useEffect(() => {
     fetchJobs();
-  }, [fetchJobs]);
+
+    // Setup Socket.IO listener
+    socket.on("jobUpdates", (jobs) => {
+      setJobs(jobs);
+    });
+
+    return () => {
+      socket.off("jobUpdates");
+    };
+  }, []);
 
   const applyFilter = useCallback(() => {
     const today = new Date();
@@ -248,8 +260,9 @@ const Joblistings = () => {
 
                         {expandedJobs.has(job._id) && (
                           <div className="mt-2">
-                            <h6>Job Description:</h6>
-                            <p>{job.description}</p>
+                            <p>
+                              <strong>Description:</strong> {job.description}
+                            </p>
                           </div>
                         )}
                       </div>
