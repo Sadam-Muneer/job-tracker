@@ -1,40 +1,29 @@
+require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+const cors = require('cors');
 const mongoose = require('mongoose');
-const Job = require('./models/Job'); // Adjust the path as necessary
+const jobRoutes = require('./routes/jobRoutes');
+const skillRoutes = require('./routes/skillRoutes');
+const { fetchAndSaveJobs } = require('./controllers/fetchJobsController');
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+const port = process.env.PORT || 3000;
 
-// MongoDB connection and other middleware setup
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+app.use(cors());
+app.use(express.json());
 
+mongoose.connect(process.env.MONGO_URI, {
 
-// Setup Socket.IO connection
-io.on('connection', (socket) => {
-  console.log('New client connected');
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
-  // Emit new job when a job is created or updated
-  const jobChangeHandler = async () => {
-    const jobs = await Job.find().sort({ createdAt: -1 });
-    socket.emit('jobUpdates', jobs);
-  };
+// Routes
+app.use('/api/jobs', jobRoutes);
+app.use('/api/job-skills', skillRoutes);
 
-  // Watch for changes in the jobs collection
-  const changeStream = Job.watch();
-  changeStream.on('change', jobChangeHandler);
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-    changeStream.close();
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Start server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+  fetchAndSaveJobs();
 });

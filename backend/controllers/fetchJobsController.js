@@ -58,7 +58,6 @@ exports.fetchAndSaveJobs = async () => {
                                         });
 
                                         for (const job of newJobs) {
-                                                            console.log("Saving job:", job);  // Add logging here
                                                             await Job.updateOne({ title: job.title, pubDate: job.pubDate }, job, {
                                                                                 upsert: true,
                                                             });
