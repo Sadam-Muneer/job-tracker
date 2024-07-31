@@ -33,13 +33,9 @@ exports.fetchAndSaveJobs = async () => {
                                                                                                     ""
                                                                                 )
                                                                                 .trim();
-                                                            const uniqueSkills = [
-                                                                                ...new Set(
-                                                                                                    skillsMatch
-                                                                                                                        ? skillsMatch[1].split(",").map((skill) => skill.trim())
-                                                                                                                        : []
-                                                                                ),
-                                                            ];
+                                                            const uniqueSkills = skillsMatch
+                                                                                ? skillsMatch[1].split(",").map((skill) => skill.trim())
+                                                                                : [];
 
                                                             return {
                                                                                 title: item.title || "No title available",
@@ -62,6 +58,7 @@ exports.fetchAndSaveJobs = async () => {
                                         });
 
                                         for (const job of newJobs) {
+                                                            console.log("Saving job:", job);  // Add logging here
                                                             await Job.updateOne({ title: job.title, pubDate: job.pubDate }, job, {
                                                                                 upsert: true,
                                                             });
