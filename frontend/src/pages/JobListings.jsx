@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Joblistings.css";
+
+const socket = io("http://localhost:3000"); // Adjust the URL if necessary
 
 const Joblistings = () => {
   const [jobs, setJobs] = useState([]);
@@ -50,10 +53,22 @@ const Joblistings = () => {
     fetchJobs();
 
     // Set up a timer to refresh jobs every 5 minutes
-    const intervalId = setInterval(fetchJobs, 5 * 60 * 1000);
+    const intervalId = setInterval(fetchJobs, 1 * 60 * 1000);
 
     // Clean up the timer on component unmount
     return () => clearInterval(intervalId);
+  }, [fetchJobs]);
+
+  useEffect(() => {
+    // WebSocket event listener
+    socket.on("jobsUpdated", () => {
+      fetchJobs();
+    });
+
+    // Clean up the WebSocket connection on component unmount
+    return () => {
+      socket.off("jobsUpdated");
+    };
   }, [fetchJobs]);
 
   const applyFilter = useCallback(() => {
