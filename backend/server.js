@@ -1,13 +1,13 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const jobRoutes = require('./routes/jobRoutes');
-const skillRoutes = require('./routes/skillRoutes');
-const { fetchAndSaveJobs } = require('./controllers/fetchJobsController');
-const cron = require('node-cron');
-const http = require('http');
-const socketIo = require('socket.io');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const jobRoutes = require("./routes/jobRoutes");
+const skillRoutes = require("./routes/skillRoutes");
+const { fetchAndSaveJobs } = require("./controllers/fetchJobsController");
+const cron = require("node-cron");
+const http = require("http");
+const socketIo = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,32 +17,30 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI, {
-
-})
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Error connecting to MongoDB:', err));
+mongoose
+  .connect(process.env.MONGO_URI, {})
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // Routes
-app.use('/api/jobs', jobRoutes);
-app.use('/api/job-skills', skillRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/job-skills", skillRoutes);
 // In your fetchAndSaveJobs function
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule("*/5 * * * *", async () => {
   try {
     await fetchAndSaveJobs();
-    io.emit('jobsUpdated'); // Notify clients about the update
+    io.emit("jobsUpdated"); // Notify clients about the update
   } catch (error) {
-    console.error('Error in scheduled job fetch:', error);
+    console.error("Error in scheduled job fetch:", error);
   }
 });
 
-
 // Socket.io connection
-io.on('connection', (socket) => {
-  console.log('New client connected');
+io.on("connection", (socket) => {
+  console.log("New client connected");
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
