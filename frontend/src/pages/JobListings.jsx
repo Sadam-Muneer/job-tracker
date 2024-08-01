@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Joblistings.css";
-
-const socket = io("http://localhost:3000"); // Adjust the URL if necessary
 
 const Joblistings = () => {
   const [jobs, setJobs] = useState([]);
@@ -15,9 +12,11 @@ const Joblistings = () => {
   const [searchInput, setSearchInput] = useState("");
   const [filter, setFilter] = useState("");
   const [expandedJobs, setExpandedJobs] = useState(new Set());
+  const [webSocketError, setWebSocketError] = useState(null);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const skillFilter = queryParams.get("skill");
+  let socket;
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -53,22 +52,10 @@ const Joblistings = () => {
     fetchJobs();
 
     // Set up a timer to refresh jobs every 5 minutes
-    const intervalId = setInterval(fetchJobs, 1 * 60 * 1000);
+    const intervalId = setInterval(fetchJobs, 5 * 60 * 1000);
 
     // Clean up the timer on component unmount
     return () => clearInterval(intervalId);
-  }, [fetchJobs]);
-
-  useEffect(() => {
-    // WebSocket event listener
-    socket.on("jobsUpdated", () => {
-      fetchJobs();
-    });
-
-    // Clean up the WebSocket connection on component unmount
-    return () => {
-      socket.off("jobsUpdated");
-    };
   }, [fetchJobs]);
 
   const applyFilter = useCallback(() => {
@@ -138,6 +125,55 @@ const Joblistings = () => {
     });
   };
 
+  useEffect(() => {
+    const connectWebSocket = () => {
+      socket = new WebSocket(
+        "wss://job-tracker-zeta.vercel.app/socket.io/?EIO=3&transport=websocket"
+      );
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established.");
+        setWebSocketError(null); // Clear any previous WebSocket errors
+      };
+
+      socket.onmessage = (event) => {
+        if (event.data === "jobsUpdated") {
+          fetchJobs();
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+        setWebSocketError("Error: WebSocket connection issue.");
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+        setWebSocketError(
+          "WebSocket connection lost. Data may not be updated."
+        );
+
+        // Attempt to reconnect after 5 seconds
+        setTimeout(connectWebSocket, 5000);
+      };
+
+      return () => {
+        if (socket) {
+          socket.close(); // Clean up WebSocket connection on component unmount
+        }
+      };
+    };
+
+    connectWebSocket(); // Establish WebSocket connection
+
+    // Clean up WebSocket connection on component unmount
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [fetchJobs]);
+
   return (
     <div className="container mt-5 py-5">
       <h1 className="mb-4 pt-3">Job Listings ({filteredJobs.length})</h1>
@@ -145,6 +181,8 @@ const Joblistings = () => {
         <div className="text-center">Loading...</div>
       ) : error ? (
         <div className="alert alert-danger">{error}</div>
+      ) : webSocketError ? (
+        <div className="alert alert-warning">{webSocketError}</div>
       ) : (
         <>
           <h5>Search:</h5>
