@@ -229,42 +229,44 @@ const Joblistings = () => {
                         <p className="card-text">
                           <strong>Created At:</strong>{" "}
                           {new Date(job.createdAt).toLocaleString("en-US", {
-                            weekday: "short",
+                            weekday: "long",
                             year: "numeric",
-                            month: "short",
+                            month: "long",
                             day: "numeric",
-                            hour: "numeric",
-                            minute: "numeric",
-                            second: "numeric",
-                            hour12: true,
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
                           })}
                         </p>
-                        {expandedJobs.has(job._id) && (
-                          <div className="card-text mt-2">
-                            <p>
-                              <strong>Description:</strong> {job.description}
-                            </p>
-                            <p>
-                              <strong>Company Name:</strong> {job.companyName}
-                            </p>
-                            <p>
-                              <strong>Apply Link:</strong>{" "}
-                              <a
-                                href={job.applyLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Apply Here
-                              </a>
-                            </p>
-                          </div>
-                        )}
+
                         <button
+                          className="btn btn-secondary mt-2"
                           onClick={() => toggleJobExpand(job._id)}
-                          className="btn btn-primary mt-2"
                         >
                           {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
                         </button>
+
+                        {expandedJobs.has(job._id) && (
+                          <div className="mt-2">
+                            <h6>Job Description:</h6>
+                            <p>{job.description}</p>
+                            {job.applyLinks && job.applyLinks.length > 0 && (
+                              <div>
+                                {job.applyLinks.map((link, index) => (
+                                  <a
+                                    key={index}
+                                    href={link}
+                                    className="btn btn-secondary me-2"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Apply Now
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
