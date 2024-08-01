@@ -42,7 +42,9 @@ exports.fetchAndSaveJobs = async () => {
                                         });
 
                                         for (const job of newJobs) {
-                                                            await Job.updateOne({ title: job.title, pubDate: job.pubDate }, job, { upsert: true });
+                                                            await Job.updateOne({ title: job.title, pubDate: job.pubDate }, job, {
+                                                                                upsert: true,
+                                                            });
                                         }
 
                                         console.log("Jobs updated in MongoDB");
