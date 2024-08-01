@@ -66,7 +66,7 @@ const SkillTableComponent = () => {
           ))
         ) : (
           <div className="col-12">
-            <p className="text-center">No skills found</p>
+            <p className="text-center">loading...</p>
           </div>
         )}
       </div>
