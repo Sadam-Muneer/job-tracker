@@ -223,22 +223,6 @@ const Joblistings = () => {
                           })}
                         </p>
 
-                        {job.applyLinks && job.applyLinks.length > 0 && (
-                          <div>
-                            {job.applyLinks.map((link, index) => (
-                              <a
-                                key={index}
-                                href={link}
-                                className="btn btn-primary me-2"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Apply Here
-                              </a>
-                            ))}
-                          </div>
-                        )}
-
                         <button
                           className="btn btn-secondary mt-2"
                           onClick={() => toggleJobExpand(job._id)}
@@ -250,6 +234,21 @@ const Joblistings = () => {
                           <div className="mt-2">
                             <h6>Job Description:</h6>
                             <p>{job.description}</p>
+                            {job.applyLinks && job.applyLinks.length > 0 && (
+                              <div>
+                                {job.applyLinks.map((link, index) => (
+                                  <a
+                                    key={index}
+                                    href={link}
+                                    className="btn btn-primary me-2"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Apply Here
+                                  </a>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
