@@ -217,7 +217,7 @@ const Joblistings = () => {
                           <strong>Country:</strong> {job.country}
                         </p>
                         <p className="card-text">
-                          <strong>Created At:</strong>{" "}
+                          <strong>Posted At:</strong>{" "}
                           {new Date(job.createdAt).toLocaleString("en-US", {
                             weekday: "long",
                             year: "numeric",
@@ -246,11 +246,11 @@ const Joblistings = () => {
                                   <a
                                     key={index}
                                     href={link}
-                                    className="btn btn-primary me-2"
+                                    className="btn btn-secondary me-2"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Apply
+                                    Apply Now
                                   </a>
                                 ))}
                               </div>
