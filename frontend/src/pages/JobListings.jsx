@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import io from "socket.io-client";
-import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Joblistings.css";
 
@@ -15,9 +14,6 @@ const Joblistings = () => {
   const [searchInput, setSearchInput] = useState("");
   const [filter, setFilter] = useState("");
   const [expandedJobs, setExpandedJobs] = useState(new Set());
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const skillFilter = queryParams.get("skill");
 
   // Function to fetch jobs from the API
   const fetchJobs = useCallback(async () => {
@@ -26,9 +22,7 @@ const Joblistings = () => {
     try {
       const response = await axios.get(
         "https://job-tracker-zeta.vercel.app/api/jobs",
-        {
-          params: { filter },
-        }
+        { params: { filter } }
       );
       const sortedJobs = (response.data.jobs || []).sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -36,39 +30,32 @@ const Joblistings = () => {
       setJobs(sortedJobs);
     } catch (error) {
       console.error("API Error:", error);
-      if (error.response) {
-        setError(
-          `Error: ${error.response.status} ${error.response.statusText}`
-        );
-      } else if (error.request) {
-        setError("Error: No response received from the server.");
-      } else {
-        setError(`Error: ${error.message}`);
-      }
+      setError("Error fetching jobs");
     } finally {
       setLoading(false);
     }
   }, [filter]);
 
-  // Fetch jobs on component mount and set up WebSocket listener
+  // Fetch jobs and set up WebSocket listener
   useEffect(() => {
     fetchJobs();
 
-    // Set up WebSocket event listener
     socket.on("jobsUpdated", () => {
+      console.log("Jobs updated via WebSocket");
       fetchJobs();
     });
 
-    // Clean up the WebSocket connection on component unmount
+    const intervalId = setInterval(fetchJobs, 1 * 60 * 1000); // Refresh every 5 minutes
+
     return () => {
       socket.off("jobsUpdated");
+      clearInterval(intervalId); // Clear the interval on component unmount
     };
   }, [fetchJobs]);
 
   // Apply filters to the jobs list
   const applyFilter = useCallback(() => {
     const today = new Date();
-
     let filtered = jobs.filter((job) => {
       const createdAt = new Date(job.createdAt);
 
@@ -87,14 +74,6 @@ const Joblistings = () => {
       }
     });
 
-    if (skillFilter) {
-      filtered = filtered.filter((job) =>
-        job.skills.some((skill) =>
-          skill.toLowerCase().includes(skillFilter.toLowerCase())
-        )
-      );
-    }
-
     const lowercasedSearchInput = searchInput.toLowerCase();
     const finalFilteredJobs = filtered.filter((job) => {
       const skills = Array.isArray(job.skills) ? job.skills.join(", ") : "";
@@ -107,20 +86,23 @@ const Joblistings = () => {
     });
 
     setFilteredJobs(finalFilteredJobs);
-  }, [filter, jobs, searchInput, skillFilter]);
+  }, [filter, jobs, searchInput]);
 
   useEffect(() => {
     applyFilter();
   }, [applyFilter]);
 
+  // Handle input changes for search
   const handleSearchInputChange = (e) => {
     setSearchInput(e.target.value);
   };
 
+  // Handle filter changes
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
   };
 
+  // Toggle job expand/collapse
   const toggleJobExpand = (jobId) => {
     setExpandedJobs((prev) => {
       const newExpandedJobs = new Set(prev);
@@ -205,73 +187,71 @@ const Joblistings = () => {
           )}
 
           <div className="row">
-            {filteredJobs.length > 0
-              ? filteredJobs.map((job, index) => (
-                  <div key={index} className="col-lg-4 col-md-6 mb-4">
-                    <div className="card">
-                      <div className="card-body">
-                        <h5 className="card-title">{job.title}</h5>
-                        <p className="card-text">
-                          <strong>Category:</strong> {job.category}
-                        </p>
-                        <p className="card-text">
-                          <strong>Skills:</strong> {job.skills.join(", ")}
-                        </p>
-                        <p className="card-text">
-                          <strong>Budget:</strong> {job.budget}
-                        </p>
-                        <p className="card-text">
-                          <strong>Hourly Range:</strong> {job.hourlyRange}
-                        </p>
-                        <p className="card-text">
-                          <strong>Country:</strong> {job.country}
-                        </p>
-                        <p className="card-text">
-                          <strong>Created At:</strong>{" "}
-                          {new Date(job.createdAt).toLocaleString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                          })}
-                        </p>
+            {filteredJobs.map((job) => (
+              <div key={job._id} className="col-lg-4 col-md-6 mb-4">
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title">{job.title}</h5>
+                    <p className="card-text">
+                      <strong>Category:</strong> {job.category}
+                    </p>
+                    <p className="card-text">
+                      <strong>Skills:</strong> {job.skills.join(", ")}
+                    </p>
+                    <p className="card-text">
+                      <strong>Budget:</strong> {job.budget}
+                    </p>
+                    <p className="card-text">
+                      <strong>Hourly Range:</strong> {job.hourlyRange}
+                    </p>
+                    <p className="card-text">
+                      <strong>Country:</strong> {job.country}
+                    </p>
+                    <p className="card-text">
+                      <strong>Created At:</strong>{" "}
+                      {new Date(job.createdAt).toLocaleString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                    </p>
 
-                        <button
-                          className="btn btn-secondary mt-2"
-                          onClick={() => toggleJobExpand(job._id)}
-                        >
-                          {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
-                        </button>
+                    <button
+                      className="btn btn-secondary mt-2"
+                      onClick={() => toggleJobExpand(job._id)}
+                    >
+                      {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
+                    </button>
 
-                        {expandedJobs.has(job._id) && (
-                          <div className="mt-2">
-                            <h6>Job Description:</h6>
-                            <p>{job.description}</p>
-                            {job.applyLinks && job.applyLinks.length > 0 && (
-                              <div>
-                                {job.applyLinks.map((link, index) => (
-                                  <a
-                                    key={index}
-                                    href={link}
-                                    className="btn btn-secondary me-2"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    Apply Now
-                                  </a>
-                                ))}
-                              </div>
-                            )}
+                    {expandedJobs.has(job._id) && (
+                      <div className="mt-2">
+                        <h6>Job Description:</h6>
+                        <p>{job.description}</p>
+                        {job.applyLinks && job.applyLinks.length > 0 && (
+                          <div>
+                            {job.applyLinks.map((link, index) => (
+                              <a
+                                key={index}
+                                href={link}
+                                className="btn btn-secondary me-2"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Apply Now
+                              </a>
+                            ))}
                           </div>
                         )}
                       </div>
-                    </div>
+                    )}
                   </div>
-                ))
-              : null}
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}
