@@ -19,6 +19,7 @@ const Joblistings = () => {
   const queryParams = new URLSearchParams(location.search);
   const skillFilter = queryParams.get("skill");
 
+  // Function to fetch jobs from the API
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -49,18 +50,11 @@ const Joblistings = () => {
     }
   }, [filter]);
 
+  // Fetch jobs on component mount and set up WebSocket listener
   useEffect(() => {
     fetchJobs();
 
-    // Set up a timer to refresh jobs every 5 minutes
-    const intervalId = setInterval(fetchJobs, 1 * 60 * 1000);
-
-    // Clean up the timer on component unmount
-    return () => clearInterval(intervalId);
-  }, [fetchJobs]);
-
-  useEffect(() => {
-    // WebSocket event listener
+    // Set up WebSocket event listener
     socket.on("jobsUpdated", () => {
       fetchJobs();
     });
@@ -71,6 +65,7 @@ const Joblistings = () => {
     };
   }, [fetchJobs]);
 
+  // Apply filters to the jobs list
   const applyFilter = useCallback(() => {
     const today = new Date();
 
@@ -234,44 +229,42 @@ const Joblistings = () => {
                         <p className="card-text">
                           <strong>Created At:</strong>{" "}
                           {new Date(job.createdAt).toLocaleString("en-US", {
-                            weekday: "long",
+                            weekday: "short",
                             year: "numeric",
-                            month: "long",
+                            month: "short",
                             day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
+                            hour: "numeric",
+                            minute: "numeric",
+                            second: "numeric",
+                            hour12: true,
                           })}
                         </p>
-
+                        {expandedJobs.has(job._id) && (
+                          <div className="card-text mt-2">
+                            <p>
+                              <strong>Description:</strong> {job.description}
+                            </p>
+                            <p>
+                              <strong>Company Name:</strong> {job.companyName}
+                            </p>
+                            <p>
+                              <strong>Apply Link:</strong>{" "}
+                              <a
+                                href={job.applyLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Apply Here
+                              </a>
+                            </p>
+                          </div>
+                        )}
                         <button
-                          className="btn btn-secondary mt-2"
                           onClick={() => toggleJobExpand(job._id)}
+                          className="btn btn-primary mt-2"
                         >
                           {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
                         </button>
-
-                        {expandedJobs.has(job._id) && (
-                          <div className="mt-2">
-                            <h6>Job Description:</h6>
-                            <p>{job.description}</p>
-                            {job.applyLinks && job.applyLinks.length > 0 && (
-                              <div>
-                                {job.applyLinks.map((link, index) => (
-                                  <a
-                                    key={index}
-                                    href={link}
-                                    className="btn btn-secondary me-2"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    Apply Now
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>

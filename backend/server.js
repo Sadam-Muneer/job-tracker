@@ -26,16 +26,16 @@ mongoose.connect(process.env.MONGO_URI, {
 // Routes
 app.use('/api/jobs', jobRoutes);
 app.use('/api/job-skills', skillRoutes);
-
-// Schedule fetchAndSaveJobs to run every 5 minutes
+// In your fetchAndSaveJobs function
 cron.schedule('*/5 * * * *', async () => {
   try {
     await fetchAndSaveJobs();
-    io.emit('jobsUpdated');
+    io.emit('jobsUpdated'); // Notify clients about the update
   } catch (error) {
     console.error('Error in scheduled job fetch:', error);
   }
 });
+
 
 // Socket.io connection
 io.on('connection', (socket) => {
