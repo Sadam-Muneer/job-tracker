@@ -240,7 +240,7 @@ const Joblistings = () => {
                                   <a
                                     key={index}
                                     href={link}
-                                    className="btn btn-primary me-2"
+                                    className="btn btn-secondary me-2"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
