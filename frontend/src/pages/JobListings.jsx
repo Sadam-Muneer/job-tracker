@@ -217,7 +217,7 @@ const Joblistings = () => {
                           <strong>Country:</strong> {job.country}
                         </p>
                         <p className="card-text">
-                          <strong>Posted At:</strong>{" "}
+                          <strong>Created At:</strong>{" "}
                           {new Date(job.createdAt).toLocaleString("en-US", {
                             weekday: "long",
                             year: "numeric",
