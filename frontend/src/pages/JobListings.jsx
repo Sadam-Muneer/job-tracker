@@ -48,6 +48,12 @@ const Joblistings = () => {
 
   useEffect(() => {
     fetchJobs();
+
+    // Set up a timer to refresh jobs every 5 minutes
+    const intervalId = setInterval(fetchJobs, 5 * 60 * 1000);
+
+    // Clean up the timer on component unmount
+    return () => clearInterval(intervalId);
   }, [fetchJobs]);
 
   const applyFilter = useCallback(() => {
@@ -240,11 +246,11 @@ const Joblistings = () => {
                                   <a
                                     key={index}
                                     href={link}
-                                    className="btn btn-secondary me-2"
+                                    className="btn btn-primary me-2"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Apply Here
+                                    Apply
                                   </a>
                                 ))}
                               </div>
