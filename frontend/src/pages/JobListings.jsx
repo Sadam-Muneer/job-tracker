@@ -59,9 +59,15 @@ const Joblistings = () => {
       fetchJobs();
     });
 
-    // Clean up the WebSocket connection on component unmount
+    // Set up auto-refresh every 5 minutes
+    const intervalId = setInterval(() => {
+      fetchJobs();
+    },  * 60 * 1000); // 5 minutes in milliseconds
+
+    // Clean up the WebSocket connection and interval on component unmount
     return () => {
       socket.off("jobsUpdated");
+      clearInterval(intervalId);
     };
   }, [fetchJobs]);
 
