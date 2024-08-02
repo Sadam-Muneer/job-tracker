@@ -1,14 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './Navbar';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./Navbar";
 import Joblistings from "./pages/JobListings";
-import ChartComponent from './pages/ChartComponent';
-import SkillTableComponent from './pages/SkillTable';
+import ChartComponent from "./pages/ChartComponent";
+import SkillTableComponent from "./pages/SkillTable";
 
 function App() {
   return (
     <Router>
-      <div className='container'>
+      <div className="container">
         <Navbar />
         <div className="container">
           <Routes>

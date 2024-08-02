@@ -48,5 +48,5 @@ io.on("connection", (socket) => {
 // Start server
 server.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
-  await fetchAndSaveJobs(); // Initial fetch when server starts
+  await fetchAndSaveJobs();
 });
