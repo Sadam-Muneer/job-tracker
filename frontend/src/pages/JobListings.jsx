@@ -19,7 +19,6 @@ const Joblistings = () => {
   const queryParams = new URLSearchParams(location.search);
   const skillFilter = queryParams.get("skill");
 
-  // Function to fetch jobs from the API
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -50,28 +49,22 @@ const Joblistings = () => {
     }
   }, [filter]);
 
-  // Fetch jobs on component mount and set up WebSocket listener
   useEffect(() => {
     fetchJobs();
 
-    // Set up WebSocket event listener
     socket.on("jobsUpdated", () => {
       fetchJobs();
     });
-
-    // Set up auto-refresh every 5 minutes
     const intervalId = setInterval(() => {
       fetchJobs();
-    }, 1 * 60 * 1000); // 5 minutes in milliseconds
+    }, 5 * 60 * 1000);
 
-    // Clean up the WebSocket connection and interval on component unmount
     return () => {
       socket.off("jobsUpdated");
       clearInterval(intervalId);
     };
   }, [fetchJobs]);
 
-  // Apply filters to the jobs list
   const applyFilter = useCallback(() => {
     const today = new Date();
 
