@@ -28,7 +28,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/job-skills", skillRoutes);
 
 // Cron job for fetching and saving jobs every 5 minutes
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   try {
     await fetchAndSaveJobs();
     io.emit("jobsUpdated");

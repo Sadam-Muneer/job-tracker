@@ -15,8 +15,6 @@ exports.fetchAndSaveJobs = async () => {
     const newJobs = feed.items.map((item) => {
       const dom = new JSDOM(item.content);
       const description = dom.window.document.body.textContent;
-
-      // Extract apply links from anchor tags
       const applyLinks = Array.from(
         dom.window.document.querySelectorAll("a")
       ).map((anchor) => anchor.href);
@@ -55,7 +53,7 @@ exports.fetchAndSaveJobs = async () => {
           ? hourlyRangeMatch[1].trim()
           : "No hourly range available",
         country: countryMatch ? countryMatch[1].trim() : "No country available",
-        applyLinks: applyLinks.length > 0 ? applyLinks : [], // Use extracted links
+        applyLinks: applyLinks.length > 0 ? applyLinks : [],
         createdAt: new Date(),
       };
     });
