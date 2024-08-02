@@ -17,6 +17,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Database connection
 mongoose
   .connect(process.env.MONGO_URI, {})
   .then(() => console.log("Connected to MongoDB"))
@@ -25,7 +26,8 @@ mongoose
 // Routes
 app.use("/api/jobs", jobRoutes);
 app.use("/api/job-skills", skillRoutes);
-// In your fetchAndSaveJobs function
+
+// Cron job for fetching and saving jobs every 5 minutes
 cron.schedule("*/5 * * * *", async () => {
   try {
     await fetchAndSaveJobs();
@@ -45,7 +47,7 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-server.listen(port, () => {
+server.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
-  fetchAndSaveJobs(); // Initial fetch when server starts
+  await fetchAndSaveJobs(); // Initial fetch when server starts
 });

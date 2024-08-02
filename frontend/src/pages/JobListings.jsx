@@ -94,7 +94,6 @@ const Joblistings = () => {
         )
       );
     }
-
     const lowercasedSearchInput = searchInput.toLowerCase();
     const finalFilteredJobs = filtered.filter((job) => {
       const skills = Array.isArray(job.skills) ? job.skills.join(", ") : "";
@@ -200,79 +199,79 @@ const Joblistings = () => {
             </div>
           </div>
 
-          {filteredJobs.length === 0 && (
-            <div className="alert alert-info">No jobs available</div>
-          )}
+          {filteredJobs.length === 0 ? (
+            <div className="text-center">No jobs found.</div>
+          ) : (
+            <div className="row">
+              {filteredJobs.length > 0
+                ? filteredJobs.map((job, index) => (
+                    <div key={index} className="col-lg-4 col-md-6 mb-4">
+                      <div className="card">
+                        <div className="card-body">
+                          <h5 className="card-title">{job.title}</h5>
+                          <p className="card-text">
+                            <strong>Category:</strong> {job.category}
+                          </p>
+                          <p className="card-text">
+                            <strong>Skills:</strong> {job.skills.join(", ")}
+                          </p>
+                          <p className="card-text">
+                            <strong>Budget:</strong> {job.budget}
+                          </p>
+                          <p className="card-text">
+                            <strong>Hourly Range:</strong> {job.hourlyRange}
+                          </p>
+                          <p className="card-text">
+                            <strong>Country:</strong> {job.country}
+                          </p>
+                          <p className="card-text">
+                            <strong>Created At:</strong>{" "}
+                            {new Date(job.createdAt).toLocaleString("en-US", {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            })}
+                          </p>
 
-          <div className="row">
-            {filteredJobs.length > 0
-              ? filteredJobs.map((job, index) => (
-                  <div key={index} className="col-lg-4 col-md-6 mb-4">
-                    <div className="card">
-                      <div className="card-body">
-                        <h5 className="card-title">{job.title}</h5>
-                        <p className="card-text">
-                          <strong>Category:</strong> {job.category}
-                        </p>
-                        <p className="card-text">
-                          <strong>Skills:</strong> {job.skills.join(", ")}
-                        </p>
-                        <p className="card-text">
-                          <strong>Budget:</strong> {job.budget}
-                        </p>
-                        <p className="card-text">
-                          <strong>Hourly Range:</strong> {job.hourlyRange}
-                        </p>
-                        <p className="card-text">
-                          <strong>Country:</strong> {job.country}
-                        </p>
-                        <p className="card-text">
-                          <strong>Created At:</strong>{" "}
-                          {new Date(job.createdAt).toLocaleString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                          })}
-                        </p>
+                          <button
+                            className="btn btn-secondary mt-2"
+                            onClick={() => toggleJobExpand(job._id)}
+                          >
+                            {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
+                          </button>
 
-                        <button
-                          className="btn btn-secondary mt-2"
-                          onClick={() => toggleJobExpand(job._id)}
-                        >
-                          {expandedJobs.has(job._id) ? "Collapse" : "Expand"}
-                        </button>
-
-                        {expandedJobs.has(job._id) && (
-                          <div className="mt-2">
-                            <h6>Job Description:</h6>
-                            <p>{job.description}</p>
-                            {job.applyLinks && job.applyLinks.length > 0 && (
-                              <div>
-                                {job.applyLinks.map((link, index) => (
-                                  <a
-                                    key={index}
-                                    href={link}
-                                    className="btn btn-secondary me-2"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    Apply Now
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                          {expandedJobs.has(job._id) && (
+                            <div className="mt-2">
+                              <h6>Job Description:</h6>
+                              <p>{job.description}</p>
+                              {job.applyLinks && job.applyLinks.length > 0 && (
+                                <div>
+                                  {job.applyLinks.map((link, index) => (
+                                    <a
+                                      key={index}
+                                      href={link}
+                                      className="btn btn-secondary me-2"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      Apply Now
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              : null}
-          </div>
+                  ))
+                : null}
+            </div>
+          )}
         </>
       )}
     </div>

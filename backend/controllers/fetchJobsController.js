@@ -4,12 +4,14 @@ const Parser = require("rss-parser");
 const { JSDOM } = require("jsdom");
 
 const parser = new Parser();
-
 exports.fetchAndSaveJobs = async () => {
+  console.log("Starting job fetch and save process...");
   try {
     const feed = await parser.parseURL(
       "https://www.upwork.com/ab/feed/jobs/rss"
     );
+    console.log("Feed fetched successfully");
+
     const newJobs = feed.items.map((item) => {
       const dom = new JSDOM(item.content);
       const description = dom.window.document.body.textContent;
