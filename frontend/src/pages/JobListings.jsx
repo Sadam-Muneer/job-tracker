@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Joblistings.css";
 
-const socket = io("https://job-tracker-l9l6.vercel.app"); // Adjust the URL if necessary
+const socket = io("https://job-tracker-l9l6.vercel.app/"); // Adjust the URL if necessary
 
 const Joblistings = () => {
   const [jobs, setJobs] = useState([]);
