@@ -28,16 +28,15 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/job-skills", skillRoutes);
 
 // Cron job for fetching and saving jobs every 5 minutes
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/1 * * * *", async () => {
   try {
     await fetchAndSaveJobs();
-    io.emit("jobsUpdated"); // Notify clients about the update
+    io.emit("jobsUpdated");
   } catch (error) {
     console.error("Error in scheduled job fetch:", error);
   }
 });
 
-// Socket.io connection
 io.on("connection", (socket) => {
   console.log("New client connected");
 
